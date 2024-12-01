@@ -2,42 +2,49 @@
 
 ## Répartition du travail
 
-Lilian s'occupe de créer la vue : swing, la gestion des layouts, la gestion des images, le lien avec le controller.
-Arno s'occupe du modèle et du controller.
+Après avoir conçu la base de notre projet et mis en place le patron de conception observé, nous nous sommes répartis le travail comme suit :
+
+- Lilian s'occupe de créer la vue : swing, la gestion des layouts, la gestion des images, le lien avec le contrôleur.
+- Arno s'occupe du modèle et du contrôleur.
 
 ### Lilian
 
-J'ai d'abord établi le début de la vue, les boutons et le layout qui contient le plateau de jeu, j'ai choisi d'utiliser un GridBagLayout pour pouvoir placer les élements a des endroits précis plutot qu'à la suite les uns des autres.
-L'étape suivante à été de coder un algorithme permettant de déterminer la rotation à effectuer sur une image à partir de l'attribut ArrayList<Direction> d'un objet Tile donné en paramètre. L'algorithme se trouve dans la fonction getTileImage qui retourne l'image correspondant à la tile.
+J'ai d'abord établi le début de la vue, les boutons et le layout qui contient le plateau de jeu, j'ai opté pour un GridBagLayout pour pouvoir placer les éléments à des endroits précis plutôt qu'à la suite les uns des autres.
+L'étape suivante à été de coder un algorithme permettant de déterminer la rotation à effectuer sur une image à partir de l'attribut ArrayList \<Direction\> d'un objet Tile donné en paramètre car on ne connaît pas sa rotation actuelle. L'algorithme se trouve dans la fonction getTileImage qui retourne l'image correspondant à l'objet Tile.
 J'ai ensuite effectué plusieurs optimisations qui m'ont permis de réduire le temps de chargement de ce tableau d'environ 3 secondes à environ 0,5 secondes.
 
 ### Arno
 
-La classe GameController gère le cycle de vie du modèle. Il crée les tuiles à l'aide de la factory pour s'assurer de la bonne forme de la tuile demandée et éviter d'écrire à la main le tableau de directions mais juste demander la forme que l'on veut, cela évite les risques d'erreurs. Il crée aussi les quatre joueurs et distribuent aléatoirement leurs objectifs.
-Un joueur et une tuile ne connaissent pas l'environnement dans lequel ils évoluent seul Board le sait.
+La classe GameController gère le cycle de vie du modèle. Il crée les tuiles à l'aide de la factory pour s'assurer de la bonne forme de la tuile demandée et éviter d'écrire à la main le tableau de directions, mais juste demander la forme que l'on veut, cela évite les risques d'erreurs. Il crée aussi les quatre joueurs et distribue aléatoirement leurs objectifs.  
+Un joueur et une tuile ne connaissent pas l'environnement dans lequel ils évoluent, seul Board le sait.
 
 ## Choix de conception
 
-Nous avons commencé par concevoir le modèle puis nous avons conçu tout autour le patron de conception _observer_ pour créer la vue et écrire les premières méthodes du controller. Après ça nous avons écrit les quelques lignes du main qui ne devraient plus changer.
+Nous avons commencé par concevoir le modèle puis nous avons conçu tout autour le patron de conception _observer_ pour créer la vue et écrire les premières méthodes du controller. Après nous avons écrit les quelques lignes du _main_ qui ne devraient plus changer.
 
-### Difficultés rencontrées
+Nous avons décidé de mettre la fonction _main_ en dehors du package _app_ car elle ne fait pas partie du fonctionnement de l'application et sert seulement à instancier les différents éléments.
 
-- Pour représenter la position du joueur nous avons utilisé un tableau de deux éléments x et y cependant cette strcuture ressemble beaucoup à un vecteur deux dimensions. Nous avons donc crées une classe Vector2D pour représenter la position d'un joueur. Cela permet de mieux manipuler la structure.
+### Difficultés rencontrées et solutions apportées
+
+- Pour représenter la position du joueur nous avons utilisé un tableau de deux éléments x et y cependant cette strcuture ressemble beaucoup à un vecteur deux dimensions. Nous avons donc créé une classe Vector2D pour représenter la position d'un joueur. Cela permet de mieux manipuler les données.
 - Au départ nous étions parti sur un tableau de booléen pour représenter la forme de la tuile après conseil du professeur nous l'avons transformé en ArrayList de Direction qui est énumération des quatre directions possibles. Cela est plus facile à gérer et respecte le paradigme objet.
-- La dernière tuile, celle que l'on peut insérer dans le plateau, appartient à la classe Board et non au controller car seule la vue observe le modèle.
-- La classe Board génère une erreur si on essaye d'insérer une tuile dans une ligne ou une colonne fixe, le controller doit s'assurer de ne pas lever cette erreur (ce mécanisme pourra évoluer avec la modification de la vue)
+- Pour insérer une tuile dans le jeu, il fallait utiliser l'une des quatre méthodes qui le permettaient. Après développement, il s'est avéré qu'elles avaient le même code. Nous avons donc ressembler le code identique dans une cinquième fonction qui est la seul public qui prend en paramètre une direction pour déterminer quelle sous-méthode utiliser.
+- La dernière tuile, celle que l'on peut insérer dans le plateau, appartient à la classe Board et non au controller car la vue n'observe que le modèle.
+- La classe Board génère une erreur si on essaye d'insérer une tuile dans une ligne ou une colonne fixe, le controller doit s'assurer de ne pas lever cette erreur (ce mécanisme pourra évoluer avec la modification de la vue).
 - La classe Board possède un dictionnaire de clé Player et de valeur Vector2D, pour l'uml nous avons fait comme il nous semblait pertinent.
-- Les images ne s'affichaient plus.
+- La méthode _initGame_ existe afin que la vue observe le modèle avant que celui-ci ne s'initialise, pour éviter que la vue n'affiche rien au démarrage.
 - Le plateau ne s'affiche pas correctement sur Linux, cela peut être lié au redimensionnement forcé de la fenêtre.
+- Actuellement, la tuile ne connaît pas son image même si un attribut lui est dédié, nous utilisons pour l'instant un algorithme qui fait l'association entre Tile et l'image en tenant compte de l'orientation. Ce fonctionnement pourrait être amené à évoluer s'il s'avère inefficace, mais s'il fonctionne, on ne le modifiera qu'au moment de l'optimisation.
 
 ### Conceptions manquantes
 
-- Nous n'avons pas encore réfléchit à comment éviter qu'un joueur ne refasse l'action précédente. (un attribut dans Board certainement ou un bouton désactivé dans la vue)
-- Les tuiles qui restent fixent d'une partie à une autre (nous pensons ajouter dans la méthode init de Board la création de tuiles de rotation et de forme et d'objectif prédéfinis)
+- Nous n'avons pas encore réfléchit à comment éviter qu'un joueur ne refasse l'action précédente. (un attribut dans Board certainement et/ou un bouton désactivé dans la vue).
+- Les tuiles qui restent fixent d'une partie à une autre (nous pensons ajouter dans la méthode init de Board la création de tuiles de rotation et de forme et d'objectif prédéfinis).
 
 ## Implémentations déjà effectuées
 
 Nous avons fini d'implémenter le modèle et le controller.
+
 Il ne manque plus que la vue qui est en cours de programmation car cette dernière est la plus longue à implémenter et à faire fonctionner.
 Il est tout à fait possible que les méthodes actuelles du controller changent pour être mieux adapter à la vue.
 Le modèle n'a aucune raison de changer sauf si nous rencontrons de trop grandes difficultés ou s'il faut rajouter des méthodes auxquelles nous n'avons pas encore pensées.
@@ -48,4 +55,4 @@ Les images ont été faites via photoshop.
 
 - Ecrire des tests unitaires qui permettront de s'assurer du bon fonctionneement du modèle indépendemment de la vue.
 - Finir rapidement la vue pour tester le jeu via l'interface graphique et ainsi améliorer le projet.
-- Créer l'écran de fin et donc la gestion de fin de partie (pour l'instant le programme quitte brutalement)
+- Créer l'écran de fin et donc la gestion de fin de partie (pour l'instant le programme quitte brutalement).
