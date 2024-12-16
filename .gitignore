@@ -79,9 +79,14 @@ fabric.properties
 
 # Compiled java
 *.class
-*.psd
 
+
+# Local Lilian
 ./.vscode
 ./.idea
 .DS_Store
+*/.DS_Store
+
+# Photoshop files for assets
 psd/
+*.psd
