@@ -3,7 +3,7 @@ package app.controller;
 import app.model.*;
 
 public class GameController {
-    private final Game _game;
+    private Game _game;
 
     private boolean _testIfTilePushed = false;
 

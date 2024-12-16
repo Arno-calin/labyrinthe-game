@@ -15,8 +15,6 @@ public class TileFactory {
         directions.push(Direction.SOUTH);
         directions.push(Direction.EAST);
 
-        directions.push(Direction.NORTH);
-
         return new Tile(directions, _path + "tile_T.png");
     }
     public Tile createI()
@@ -24,9 +22,6 @@ public class TileFactory {
         Stack<Direction> directions = new Stack<>();
         directions.push(Direction.NORTH);
         directions.push(Direction.SOUTH);
-
-        directions.push(Direction.EAST);
-        directions.push(Direction.WEST);
 
         return new Tile(directions, _path + "tile_I.png");
     }
@@ -36,8 +31,6 @@ public class TileFactory {
         directions.push(Direction.SOUTH);
         directions.push(Direction.EAST);
 
-        directions.push(Direction.NORTH);
-        directions.push(Direction.WEST);
         return new Tile(directions, _path + "tile_L.png");
     }
 }

@@ -9,4 +9,6 @@ public interface BoardObserver {
     void updateCurrentPlayer(Player player);
     void updateTile(Tile tile);
     void updatePossibleDirections(ArrayList<Direction> possibleDirections);
+    void updateGameStatus(GameState status);
+    void updateGameStatus(GameState status, Player winner);
 }

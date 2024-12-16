@@ -11,10 +11,13 @@ public class Game {
     private Tile _aloneTile;
     private final Board _board = new Board();
     private final ArrayList<Direction> _possibleDirectionsOfCurrentPlayer = new ArrayList<>();
+    private GameState _gameState = GameState.WAITING;
+
     public Game()
     {
 
     }
+
     public void initGame()
     {
         // generate the board
@@ -26,6 +29,7 @@ public class Game {
         _players.generatePlayers();
         
 
+        _gameState = GameState.PLAYING;
 
         notifyObserversPlayer();
         notifyObserversCurrentPlayer();
@@ -33,6 +37,7 @@ public class Game {
         notifyObserversTile();
         notifyObserversBoard();
         notifyObserversBoard();
+        notifyGameStatus();
     }
 
     public Tile changeByDirection(Direction dir, int numRowCol, Tile newTile)
@@ -140,6 +145,15 @@ public class Game {
         }
     }
 
+    public void notifyGameStatus() {
+        for (BoardObserver obs : _observers) {
+            obs.updateGameStatus(_gameState);
+            if(_gameState == GameState.ENDED) {
+                obs.updateGameStatus(_gameState, _players.getCurrentPlayer());
+            }
+        }
+    }
+
     public void rotateAloneTile()
     {
         _aloneTile.rotate();
@@ -213,6 +227,8 @@ public class Game {
     }
     public void endGame()
     {
+        _gameState = GameState.ENDED;
+        notifyGameStatus();
         System.out.println("Fin du jeu");
         System.exit(0);
     }
