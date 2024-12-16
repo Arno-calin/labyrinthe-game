@@ -517,7 +517,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
      */
     @Override
     public void updateGameStatus(GameState status) {
-        // Placeholder for game status update
+
     }
 
     /**
@@ -548,6 +548,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
             JButton exitButton = new JButton("Exit Game");
             exitButton.addActionListener(e -> {
                 dialog.dispose();
+                System.exit(0);
             });
             panel.add(exitButton, gbc);
 

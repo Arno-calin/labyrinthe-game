@@ -30,6 +30,7 @@ public class Game {
         
 
         _gameState = GameState.PLAYING;
+        notifyGameStatus();
 
         notifyObserversPlayer();
         notifyObserversCurrentPlayer();
@@ -37,7 +38,6 @@ public class Game {
         notifyObserversTile();
         notifyObserversBoard();
         notifyObserversBoard();
-        notifyGameStatus();
     }
 
     public Tile changeByDirection(Direction dir, int numRowCol, Tile newTile)
@@ -147,9 +147,10 @@ public class Game {
 
     public void notifyGameStatus() {
         for (BoardObserver obs : _observers) {
-            obs.updateGameStatus(_gameState);
             if(_gameState == GameState.ENDED) {
                 obs.updateGameStatus(_gameState, _players.getCurrentPlayer());
+            } else {
+                obs.updateGameStatus(_gameState);
             }
         }
     }
@@ -217,8 +218,9 @@ public class Game {
 
     public void nextTurn()
     {
-        _players.nextPlayer();
         nextGoalCurrentPlayer();
+        notifyObserversPlayer();
+        _players.nextPlayer();
         // changePossibleDirection();
         _possibleDirectionsOfCurrentPlayer.clear();// pour empêcher le joueur de se déplacer avant d'insérer
         notifyPossibleDirections();
