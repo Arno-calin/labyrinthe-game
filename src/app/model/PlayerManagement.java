@@ -67,16 +67,14 @@ public class PlayerManagement {
 
     public void movePlayer(Direction direction) {
         Player player = getCurrentPlayer();
+        Vector2D vector = _playersPositions.get(player);
         switch (direction)
         {
-            case EAST -> _playersPositions.get(player).moveRight();
-
-            case WEST -> _playersPositions.get(player).moveLeft();
-
-            case NORTH -> _playersPositions.get(player).moveTop();
-
-            case SOUTH -> _playersPositions.get(player).moveBottom();}
-
+            case EAST -> vector.moveRight();
+            case WEST -> vector.moveLeft();
+            case NORTH -> vector.moveTop();
+            case SOUTH -> vector.moveBottom();
+            }
     }
 
     public HashMap<Player, Vector2D> getPlayer()

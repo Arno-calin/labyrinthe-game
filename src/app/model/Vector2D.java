@@ -26,6 +26,23 @@ public class Vector2D {
     {
         _x++;
     }
+
+    public void initLeft()
+    {
+        _y = 6;
+    }
+    public void initRight()
+    {
+        _y = 0;
+    }
+    public void initTop()
+    {
+        _x = 6;
+    }
+    public void initBottom()
+    {
+        _x = 0;
+    }
     public int getX(){return _x;}
     public int getY(){return _y;}
 }

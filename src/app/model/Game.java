@@ -44,31 +44,42 @@ public class Game {
         switch (dir){
             case NORTH -> {
                 tempRetour = _board.changeByNorth(numRowCol, newTile);
-
                 for (Map.Entry<Player, Vector2D> entry : _players.getPlayer().entrySet()) {
-                    if (entry.getValue().getX() == numRowCol)
-                        entry.getValue().moveRight();
+                    Vector2D vector = entry.getValue();
+                    if (vector.getX() == numRowCol)
+                        vector.moveRight();
+                    if (vector.getY() > 6)
+                        vector.initRight();
                 }
             }
             case EAST -> {tempRetour = _board.changeByEast(numRowCol, newTile);
 
                 for (Map.Entry<Player, Vector2D> entry : _players.getPlayer().entrySet()) {
-                    if (entry.getValue().getY() == numRowCol)
-                        entry.getValue().moveTop();
+                    Vector2D vector = entry.getValue();
+                    if (vector.getY() == numRowCol)
+                        vector.moveTop();
+                    if (vector.getX() < 0)
+                        vector.initTop();
                 }
             }
             case SOUTH ->{tempRetour = _board.changeBySouth(numRowCol, newTile);
 
                 for (Map.Entry<Player, Vector2D> entry : _players.getPlayer().entrySet()) {
-                    if (entry.getValue().getX() == numRowCol)
-                        entry.getValue().moveLeft();
+                    Vector2D vector = entry.getValue();
+                    if (vector.getX() == numRowCol)
+                        vector.moveLeft();
+                    if (vector.getY() < 0)
+                        vector.initLeft();
                 }
             }
             case WEST ->{tempRetour = _board.changeByWest(numRowCol, newTile);
 
                 for (Map.Entry<Player, Vector2D> entry : _players.getPlayer().entrySet()) {
-                    if (entry.getValue().getY() == numRowCol)
-                        entry.getValue().moveBottom();
+                    Vector2D vector = entry.getValue();
+                    if (vector.getY() == numRowCol)
+                        vector.moveBottom();
+                    if (vector.getX() > 6)
+                        vector.initBottom();
                 }
             }
         };
