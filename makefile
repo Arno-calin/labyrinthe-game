@@ -1,6 +1,6 @@
 all: build run
 
-run:
+run: build
 	- cd ./out && java App && cd ..
 jar: build
 	- cd ./out && jar cfe Labyrinthe.jar App ./* && cd ..
