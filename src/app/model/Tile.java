@@ -20,6 +20,10 @@ public class Tile {
             _possibleDirections.add(form.pop());
     }
 
+    /** 
+    * Rotating a tile involves changing all the possible directions of the tile 
+    * with the following directions in a clockwise direction. 
+    */
     public void rotate() {
         _possibleDirections.replaceAll(Direction::next);
     }

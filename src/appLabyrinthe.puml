@@ -70,6 +70,7 @@ package app {
 
         playerManagement"1" *--> "*\n- _players"Player: > handle
 
+
         class Board{
             - SIZE: Integer
             + <<create>> Board()
@@ -246,13 +247,28 @@ class App {
     + {static} main(args: String[*])
 }
 
-App ..> Game: <<uses>>
-App ..> GameController: <<uses>>
-App ..> LabyrinthDisplay: <<uses>>
+App ..> Game: <<create>>
+App ..> GameController: <<create>>
+App ..> LabyrinthDisplay: <<create>>
 
 TileFactory <.. Game: <<uses>>
 TileFactory <.. Board: <<uses>>
 TileFactory ..> Tile: <<create>>
+
+Board ..> Goal: <<uses>>
+Board ..> Tile: <<uses>>
+
+playerManagement ..> Goal: <<uses>>
+playerManagement ..> Player: <<uses>>
+playerManagement ..> Vector2D: <<uses>>
+
+Game ..> GameState: <<uses>>
+Game ..> Board: <<create>>
+Game ..> playerManagement: <<create>>
+Game ..> Vector2D: <<uses>>
+Game ..> BoardObserver: <<uses>>
+Game ..> Direction: <<uses>>
+Game ..> Tile: <<uses>>
 
 LabyrinthDisplay ..> helpers: <<uses>>
 

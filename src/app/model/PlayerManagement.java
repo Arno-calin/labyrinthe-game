@@ -131,10 +131,10 @@ public class PlayerManagement {
     {
         return switch (getCurrentPlayer().getName())
                 {
-                    case "jaune"-> _playersPositions.get(getCurrentPlayer()).getX() == 0 && _playersPositions.get(getCurrentPlayer()).getY() == 0;
-                    case "bleu"-> _playersPositions.get(getCurrentPlayer()).getX() == 0 && _playersPositions.get(getCurrentPlayer()).getY() == 6;
-                    case "vert"-> _playersPositions.get(getCurrentPlayer()).getX() == 6 && _playersPositions.get(getCurrentPlayer()).getY() == 0;
-                    case "rouge"-> _playersPositions.get(getCurrentPlayer()).getX() == 6 && _playersPositions.get(getCurrentPlayer()).getY() == 6;
+                    case "jaune"-> getPositionCurrentPlayer().getX() == 0 && getPositionCurrentPlayer().getY() == 0;
+                    case "bleu"-> getPositionCurrentPlayer().getX() == 0 && getPositionCurrentPlayer().getY() == 6;
+                    case "vert"-> getPositionCurrentPlayer().getX() == 6 && getPositionCurrentPlayer().getY() == 0;
+                    case "rouge"-> getPositionCurrentPlayer().getX() == 6 && getPositionCurrentPlayer().getY() == 6;
                     default -> throw new IllegalArgumentException("It is not a ");
                 };
     }
