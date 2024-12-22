@@ -4,10 +4,15 @@ public class Vector2D {
     private int _x;
     private int _y;
 
+    /**
+     *
+     * @param x starting address of x
+     * @param y starting address of y
+     */
     public Vector2D(int x, int y)
     {
-        _x = y;
-        _y = x;
+        _y = y;
+        _x = x;
     }
 
     public void moveLeft()
@@ -27,22 +32,8 @@ public class Vector2D {
         _x++;
     }
 
-    public void initLeft()
-    {
-        _y = 6;
-    }
-    public void initRight()
-    {
-        _y = 0;
-    }
-    public void initTop()
-    {
-        _x = 6;
-    }
-    public void initBottom()
-    {
-        _x = 0;
-    }
+    public void setX(int val){_x = val;}
+    public void setY(int val){_y = val;}
     public int getX(){return _x;}
     public int getY(){return _y;}
 }

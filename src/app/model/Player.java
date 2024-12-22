@@ -10,6 +10,11 @@ public class Player {
 
     private final String _name;
 
+    /**
+     *
+     * @param goals The player's goal stack
+     * @param name the player's name
+     */
     public Player(Stack<Goal> goals, String name)
     {
         _goalMax = goals.size();
@@ -25,6 +30,11 @@ public class Player {
     {
         return _goalMax;
     }
+
+    /**
+     *
+     * @return If the player still has objectives
+     */
     public boolean isRestGoal()
     {
         return !_goalsStack.isEmpty();

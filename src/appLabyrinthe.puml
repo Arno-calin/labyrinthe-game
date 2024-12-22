@@ -3,11 +3,13 @@
 package app {
     package model {
         interface BoardObserver {
-            + updateBoard(tiles: Tile[*], players: <Player, Vector2D>);
-            + updatePlayer(players: <Player, Vector2D>);
-            + updateCurrentPlayer(player: Player);
-            + updateTile(tile: Tile);
-            + updatePossibleDirections(possibleDirections: Direction[*]);
+            + updateBoard(tiles: Tile[*], players: <Player, Vector2D>)
+            + updatePlayers(players: <Player, Vector2D>)
+            + updateCurrentPlayer(player: Player)
+            + updateTile(tile: Tile)
+            + updatePossibleDirections(possibleDirections: Direction[*])
+            + updateGameStatus(status: GameState)
+            + updateGameStatus(status: GameState, winner: Player)
         }
 
         class Game
@@ -26,22 +28,24 @@ package app {
             + notifyObserversPlayer()
             + notifyObserversTile()
             + notifyPossibleDirections()
+            + notifyGameStatus()
 
             + rotateAloneTile()
             + changePossibleDirection()
             + movePlayer(direction: Direction)
-            + nextGoalCurrentPlayer()
+            + isCurrentPlayerFindItsGoal()
             + ifCurrentPlayerWin(): Boolean
             + getTileCurrentPlayer(): Tile
             + isMovable(numRowCol: Integer): Boolean
             + nextTurn()
             + endTurn()
         }
-        Game o--> "*\n- _observers" app.model.BoardObserver
-        Game *--> "1\n- _players"playerManagement
-        Game *--> "1\n- _aloneTile" Tile
-        Game *--> "1\n- _board" Board
-        Game o--> "*\n- _possibleDirectionsOfCurrentPlayer"Direction
+        Game"*" o--> "*\n- _observers" BoardObserver: > observed by
+        Game"1" *--> "1\n- _players" playerManagement: > who play
+        Game"1" *--> "1\n- _aloneTile" Tile: > have
+        Game"1" *--> "1\n- _board" Board: > where we play
+        Game"*" o--> "*\n- _possibleDirectionsOfCurrentPlayer" Direction: > where the player can go
+        Game"*" o--> "1\n- _gameState" GameState: > is
 
         class playerManagement
         {
@@ -54,21 +58,23 @@ package app {
             + getCurrentPlayer(): Player
             + nextPlayer()
             + getPositionCurrentPlayer(): Vector2D
-            + movePlayer(direction: Direction)
+            + moveCurrentPlayer(direction: Direction)
             + getPlayer(): <Player, Vector2D>
             + getCurrentGoalCurrentPlayer(): Goal
             + nextGoalCurrentPlayer()
             + ifCurrentPlayerRestGoal(): Boolean
+            + ifCurrentPlayerHasComeBack(): Boolean
         }
-        Player "1" o-* "1" Vector2D
+        Player "1" o-* "1" Vector2D: > be located
         (Player, Vector2D) .. playerManagement: *\n- _playersPositions
-        playerManagement *--> "*\n- _players"Player
+
+        playerManagement"1" *--> "*\n- _players"Player: > handle
 
         class Board{
             - SIZE: Integer
             + <<create>> Board()
             + initBoard()
-            - generateBoard()
+            - generateTiles()
             - createBoard(setTiles Tile[*])
 
             + changeByNorth(numCol: Integer, newTile Tile): Tile
@@ -81,13 +87,13 @@ package app {
             + getBoard(): Tile[*]
             + getSize(): Integer
         }
-        Board o--> "*\n- _board" Tile: > is composed of
+        Board "1" *--> "*\n- _board" Tile: > is composed of
 
         class Player{
             - _goalSuccessful: Integer
             - _goalMax: Integer
             - _name: String
-            + <<create>> Player(goals: Goal[*])
+            + <<create>> Player(goals: Goal[*], name: String)
             + getGoalSuccessful(): Integer
             + getGoalMaxNumber(): Integer
             + isRestGoal(): Boolean
@@ -96,46 +102,65 @@ package app {
             + getName(): String
             + toString(): String
         }
-        Player o-->"*\n- _goalStack" Goal: > the stack of goals 
+        Player"*" o-->"*\n- _goalStack" Goal: > stack of
 
         class Tile{
             - _pathImg: String
-            + <<create>> Tile(goal: Goal, form: Direction[*], path: String)
+            + <<create>> Tile(form: Direction[*], path: String)
             + rotate()
             + existGoal(): Boolean
             + getDirection(): Direction[*]
+            + setGoal(goal: Goal)
             + getGoal(): Goal
-            + isDirectionPossible(dir: Direction): Boolean
             + getPathImg():String
             + toString(): String
         }
-        Tile o-->"1\n- _goal" Goal: > have
-        Tile o-->"*\n- _possibleDirections" Direction: > can move 
+        Tile"*" o-->"1\n- _goal" Goal: > have
+        Tile"*" o-->"*\n- _possibleDirections" Direction: > can move at
+
+        class Vector2D
+        {
+            - _x: Integer
+            - _y: Integer
+            + <<create>> Vector2D()
+            + moveLeft()
+            + moveRight()
+            + moveTop()
+            + moveBottom()
+
+            + setX(val: Integer)
+            + setY(val: Integer)
+            + getX(): Integer
+            + getY(): Integer
+        }
 
         class TileFactory{
-            - _path: String
-            + <<create>> TileFactory
+            - PATH: String
+            + <<create>> TileFactory()
             + createT(): Tile
             + createI(): Tile
             + createL(): Tile
-            + createT(goal: Goal): Tile
-            + createI(goal: Goal): Tile
-            + createL(goal: Goal): Tile
+        }
+
+        enum GameState {
+            WAITING,
+            PLAYING,
+            ENDED
         }
 
         enum Goal{
-            WITCH_HAT,
+            HAT,
             KEY,
             RING,
             CHANDELIER,
-            TREASURE_MAP,
+            MAP,
             CROWN,
             SWORD,
-            SPELL_BOOK,
-            MAGIC_WAND,
+            BOOK,
+            WAND,
             SHIELD,
-            MAGIC_POTION,
-            TREASURE_CHEST,
+            POTION,
+            CHEST,
             GHOST,
             DRAGON,
             BAT,
@@ -155,36 +180,25 @@ package app {
             EAST,
             SOUTH,
             WEST
+            + {static} next (current: Direction): Direction
         }
-
-        class Vector2D
-        {
-            - _x: Integer
-            - _y: Integer
-            + <<create>> Vector2D()
-            + moveLeft()
-            + moveRight()
-            + moveTop()
-            + moveBottom()
-            + getX(): Integer
-            + getY(): Integer
-        }
-
     }
     package controller 
     {
         class GameController
         {
+            - _testIfTilePushed: Boolean
+
             + <<create>> GameController(game: Game)
             + initGame()
             + rotateLeft()
             + rotateRight()
-            + pushCardsOnBoard(dir: Direction, numRowCol: Integer)
+            + pushTileOnBoard(dir: Direction, numRowCol: Integer)
             + movePlayer(direction: Direction)
             + endTurn()
             + isMovable:Boolean
         }
-        GameController o--> "1\n - _game" app.model.Game: > controlle
+        GameController "1" o--> "1\n - _game" Game: > control
     }
 
     package view 
@@ -193,41 +207,37 @@ package app {
         {
             - WIDTH: Integer
             - HEIGHT: Integer
-            - _pnlContentPane: JPanel
-            - _pnlTop: JPanel
-            - _pnlMiddle: JPanel
-            - _pnlBottom: JPanel
-            - _pnlPlayerInfo: JPanel
-            - _currentTilePanel: JPanel
-            - _currentTile: Tile
-            - _controller: GameController
-            - _playerLabels: JLabel[]
 
             + <<create>> LabyrinthDisplay(controller: GameController)
             - initializeTopPanel()
             - initializeMiddlePanel()
             - initializeBottomPanel()
             - layoutMainPanel()
-            + display(message: String)
+            - showStartupDialog()
+
+            + drawPlayerOnImage(image: BufferedImage, player: Player): BufferedImage
             + getTileImage(tile: Tile): BufferedImage
 
             + updateBoard(tiles: Tile[*], players: <Player, Vector2D>);
-            + updatePlayer(players: <Player, Vector2D>);
+            + updatePlayers(players: <Player, Vector2D>);
             + updateCurrentPlayer(player: Player);
             + updateTile(tile: Tile);
             + updatePossibleDirections(possibleDirections: Direction[*]);
+            + updateGameStatus(status: GameState)
+            + updateGameStatus(status: GameState, winner: Player)
         }
     }
 
-    LabyrinthDisplay ..> helpers.ImageHelper: <<uses>>
+    LabyrinthDisplay "1" o--> "1\n- _currentTile" Tile: > current alone tile
+    LabyrinthDisplay "1" o--> "1\n- _controller" GameController: > call
 
     package helpers{
         class ImageHelper
         {
-            + {static} merge(bg: BufferedImage, fg: BufferedImage  ): BufferedImage
-            + {static} rotate(original: BufferedImage, angle: Float):
-            + {static} rotateClockwise(original: BufferedImage):
-            + {static} rotateCounterClockwise(original: BufferedImage):
+            + {static} merge(bg: BufferedImage, fg: BufferedImage): BufferedImage
+            + {static} rotate(original: BufferedImage, angle: Float): BufferedImage
+            + {static} rotateClockwise(original: BufferedImage): BufferedImage
+            + {static} rotateCounterClockwise(original: BufferedImage): BufferedImage
         }
     }
 }
@@ -236,6 +246,14 @@ class App {
     + {static} main(args: String[*])
 }
 
+App ..> Game: <<uses>>
+App ..> GameController: <<uses>>
+App ..> LabyrinthDisplay: <<uses>>
 
+TileFactory <.. Game: <<uses>>
+TileFactory <.. Board: <<uses>>
+TileFactory ..> Tile: <<create>>
+
+LabyrinthDisplay ..> helpers: <<uses>>
 
 @enduml

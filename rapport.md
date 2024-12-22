@@ -80,4 +80,19 @@ Problèmes rencontrés :
 - Les déplacements des joueurs étaient décalés, cliquer sur une fleche faisait bouger le joueur dans une autre direction.
 - Les directions de déplacement autorisées n'étaient pas les bonnes. Je me suis rendu compte que nous avions oublié une vérification dans la fonction changePossibleDirection.
 
+#  Idée 
+pourquoi une surchage de updateGameStatus : ...
 
+Actuellement le main initialise le modèle dans une version future ce serait la vue cependant l'implémentation actuelle de la vue ne le permet pas mais la méthode du controller existe au cas où quelqu'un veuille le faire
+Trop de logique dans le controller mais en vrai ça passe
+C'est très moche d'avoir une logique dans le controlleur et une dans le modèle pour gérer la même chose
+-> être obliger de pousser une tuile avant tout autre chose
+isMovable est utilisé pour savoir quelle ligne et colonne sont poussables cependant la méthode utilisée n'est probablement pas la meilleure
+
+manque le bonus 2 et un niveau 4
+
+Un bordel pas possible niveau des axes X et Y 
+
+un joueur peut-être déplacé à différents moments, quand une tuile est inséré où quand il doit joueur
+Il a été décidé que le nom des joueurs serait en français
+On aurait pû créer une enum namePlayer et associer à chacun une couleur

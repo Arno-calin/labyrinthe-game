@@ -5,6 +5,12 @@ public enum Direction {
     EAST,
     SOUTH,
     WEST;
+
+    /**
+     *
+     * @param current the Direction to change
+     * @return the next direction when you turn 90 degrees
+     */
     public static Direction next(Direction current)
     {
         return switch (current)

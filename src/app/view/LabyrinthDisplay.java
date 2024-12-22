@@ -36,8 +36,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
     // Player labels
     private final JLabel[] _playerLabels = new JLabel[4];
     private final JLabel _lblCurrentPlayer = new JLabel("Current player: ");
-    private final JLabel _lblCururentGoal = new JLabel("Current goal:");
-    private final JLabel[] _lblPlayer = new JLabel[4];
+    private final JLabel _lblCurrentGoal = new JLabel("Current goal:");
 
     /**
      * Constructs a LabyrinthDisplay with the specified GameController.
@@ -49,7 +48,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
         super("Labyrinth");
         _controller = controller;
         setSize(WIDTH, HEIGHT);
-        setMinimumSize(new Dimension((int)(WIDTH * 0.7), (int)(WIDTH * 1)));
+        setMinimumSize(new Dimension((int)(WIDTH * 0.7), (WIDTH)));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Show the startup dialog after the main window is visible
@@ -104,7 +103,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
         JPanel _pnlCurrentPlayer = new JPanel();
         _pnlCurrentPlayer.setLayout(new GridLayout(2, 1));
         _pnlCurrentPlayer.add(_lblCurrentPlayer);
-        _pnlCurrentPlayer.add(_lblCururentGoal);
+        _pnlCurrentPlayer.add(_lblCurrentGoal);
         _pnlTop.add(_pnlCurrentPlayer, BorderLayout.EAST);
     }
 
@@ -116,7 +115,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
         _pnlMiddle.setPreferredSize(new Dimension(700, 700));
         _pnlMiddle.setMinimumSize(new Dimension((int)(WIDTH * 0.7), (int)(WIDTH * 0.7)));
 
-        int tileSize = (int)(_pnlMiddle.getWidth() / 9);
+        int tileSize = (_pnlMiddle.getWidth() / 9);
 
         // Create a grid of panels for the game board
         for (int i = 0; i < 10; i++) {
@@ -172,6 +171,48 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
         gbc.gridy = 2;
         gbc.weighty = 0.0;
         _pnlContentPane.add(_pnlBottom, gbc);
+    }
+
+    /**
+     * Displays a startup dialog with game instructions.
+     */
+    private void showStartupDialog() {
+        // Display a startup dialog with game instructions
+        JDialog dialog = new JDialog(this, "Welcome to Labyrinth", true); // true makes it modal
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel welcomeLabel = new JLabel("Welcome to Labyrinth!", SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        panel.add(welcomeLabel, gbc);
+
+        JTextArea instructions = new JTextArea(
+                "Game Instructions:\n\n" +
+                        "1. Use arrow buttons to move your player\n" +
+                        "2. Rotate and insert tiles to create paths\n" +
+                        "3. Collect all your goals to win\n" +
+                        "4. End your turn when you're done moving"
+        );
+        instructions.setEditable(false);
+        instructions.setBackground(panel.getBackground());
+        instructions.setWrapStyleWord(true);
+        instructions.setLineWrap(true);
+        instructions.setMargin(new Insets(10, 10, 10, 10));
+        panel.add(instructions, gbc);
+
+        JButton startButton = new JButton("Start Game");
+        startButton.addActionListener(e -> dialog.dispose());
+        panel.add(startButton, gbc);
+
+        dialog.add(panel);
+        dialog.pack();
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        dialog.setVisible(true);
     }
 
     /**
@@ -234,7 +275,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
             if(direction.contains(Direction.EAST)) {
                 image = ImageHelper.rotateClockwise(image);
             }
-        } 
+        }
         else {
             if(direction.contains(Direction.WEST)) {
                 if(direction.contains(Direction.SOUTH)) {
@@ -267,7 +308,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
         GridBagConstraints constraints = new GridBagConstraints();
         _pnlMiddle.removeAll(); // Clear the panel before adding new components
         
-        int tileSize = (int)(_pnlMiddle.getWidth() / 9); // Fixed size for tiles
+        int tileSize = (_pnlMiddle.getWidth() / 9); // Fixed size for tiles
         
         for(int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {
@@ -303,7 +344,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
     
                         JButton button = new JButton(buttonText);
                         button.setPreferredSize(new Dimension(tileSize, tileSize));
-                        button.addActionListener(e -> _controller.pushCardsOnBoard(dir, numRowCol));
+                        button.addActionListener(e -> _controller.pushTileOnBoard(dir, numRowCol));
                         _pnlMiddle.add(button, constraints);
                     }
                 } else {
@@ -356,7 +397,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
      * @param players the map of players and their positions
      */
     @Override
-    public void updatePlayer(HashMap<Player, Vector2D> players) {
+    public void updatePlayers(HashMap<Player, Vector2D> players) {
         // Update player information display
         int i = 0;
         for (Map.Entry<Player, Vector2D> entry : players.entrySet()) {
@@ -371,6 +412,26 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
     }
 
     /**
+     * Updates the display to show the current player and their current goal.
+     *
+     * @param player the current player
+     */
+    @Override
+    public void updateCurrentPlayer(Player player) {
+        // Update the current player display
+        setTitle("Labyrinth - Player " + player.getName());
+        _lblCurrentPlayer.setText("Current player: " + player.getName());
+        _lblCurrentGoal.setText("Current goal: " + player.getCurrentGoal().toString());
+
+        switch(player.getName()) {
+            case "jaune" -> _lblCurrentPlayer.setForeground(Color.YELLOW);
+            case "bleu" -> _lblCurrentPlayer.setForeground(Color.BLUE);
+            case "vert" -> _lblCurrentPlayer.setForeground(Color.GREEN);
+            case "rouge" -> _lblCurrentPlayer.setForeground(Color.RED);
+        }
+    }
+
+    /**
      * Updates the current tile display with the specified tile.
      *
      * @param tile the tile to display as the current tile
@@ -381,8 +442,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
         _currentTile = tile;
         _currentTilePanel.removeAll();
         _currentTilePanel.setMinimumSize(new Dimension(_pnlRotateTile.getHeight(), _pnlRotateTile.getHeight()));
-        int tileSize = (int)(_currentTilePanel.getWidth());
-        
+
         JPanel tileDisplay = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -407,6 +467,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
             lbl.setForeground(Color.BLACK);
             tileDisplay.add(lbl);
         }
+
         tileDisplay.setPreferredSize(new Dimension(70,70)); // Match the game board tile size
         tileDisplay.setBackground(Color.WHITE);
         
@@ -415,25 +476,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
         _currentTilePanel.repaint();
     }
 
-    /**
-     * Updates the display to show the current player and their current goal.
-     *
-     * @param player the current player
-     */
-    @Override
-    public void updateCurrentPlayer(Player player) {
-        // Update the current player display
-        setTitle("Labyrinth - Player " + player.getName());
-        _lblCurrentPlayer.setText("Current player: " + player.getName());
-        _lblCururentGoal.setText("Current goal: " + player.getCurrentGoal().toString());
 
-        switch(player.getName()) {
-            case "jaune" -> _lblCurrentPlayer.setForeground(Color.YELLOW);
-            case "bleu" -> _lblCurrentPlayer.setForeground(Color.BLUE);
-            case "vert" -> _lblCurrentPlayer.setForeground(Color.GREEN);
-            case "rouge" -> _lblCurrentPlayer.setForeground(Color.RED);
-        }
-    }
 
     /**
      * Updates the movement panel with buttons for possible movement directions.
@@ -466,49 +509,7 @@ public class LabyrinthDisplay extends JFrame implements BoardObserver {
         _movementPanel.revalidate();
     }
 
-    /**
-     * Displays a startup dialog with game instructions.
-     */
-    private void showStartupDialog() {
-        // Display a startup dialog with game instructions
-        JDialog dialog = new JDialog(this, "Welcome to Labyrinth", true); // true makes it modal
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel welcomeLabel = new JLabel("Welcome to Labyrinth!", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        panel.add(welcomeLabel, gbc);
-
-        JTextArea instructions = new JTextArea(
-            "Game Instructions:\n\n" +
-            "1. Use arrow buttons to move your player\n" +
-            "2. Rotate and insert tiles to create paths\n" +
-            "3. Collect all your goals to win\n" +
-            "4. End your turn when you're done moving"
-        );
-        instructions.setEditable(false);
-        instructions.setBackground(panel.getBackground());
-        instructions.setWrapStyleWord(true);
-        instructions.setLineWrap(true);
-        instructions.setMargin(new Insets(10, 10, 10, 10));
-        panel.add(instructions, gbc);
-
-        JButton startButton = new JButton("Start Game");
-        startButton.addActionListener(e -> {
-            dialog.dispose();
-        });
-        panel.add(startButton, gbc);
-
-        dialog.add(panel);
-        dialog.pack();
-        dialog.setSize(400, 300);
-        dialog.setLocationRelativeTo(this);
-        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        dialog.setVisible(true);
-    }
 
     /**
      * Updates the game status display. Placeholder for future implementation.

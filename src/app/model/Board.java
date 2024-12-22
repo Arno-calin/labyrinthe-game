@@ -14,14 +14,20 @@ public class Board {
 
     public void initBoard()
     {
-        createBoard(generateBoard());
+        createBoard(generateTiles());
     }
 
-    private Tile[] generateBoard() {
+    /**
+     * This function creates the tiles that will be used during the game
+     * @return a table of Tiles
+     */
+    private Tile[] generateTiles() {
         Tile[] set = new Tile[49];
         TileFactory ft = new TileFactory();
 
         ArrayList<Tile> tiles = new ArrayList<>();
+
+        // Random tiles
         for (int i = 0; i < 16; i++) {
             tiles.add(ft.createL());
         }
@@ -33,6 +39,7 @@ public class Board {
         }
 
         Collections.shuffle(tiles);
+        // A random orientation for a random tile
         for (Tile t : tiles) {
             int rotations = new Random().nextInt(4);
             for (int i = 0; i < rotations; i++) {
@@ -40,9 +47,11 @@ public class Board {
             }
         }
 
+        // A stack enable to not manage the index and just use pop
         Stack<Tile> randomTiles = new Stack<>();
         randomTiles.addAll(tiles);
 
+        // Fixed tiles
         set[0] = ft.createL();
         set[2] = ft.createT();
         set[4] = ft.createT();
@@ -84,17 +93,20 @@ public class Board {
         set[48].rotate();
         set[48].rotate();
 
+        // Fill the table with tiles that will use
         for (int i = 0; i < set.length; i++) {
             if (set[i] == null) {
                 set[i] = randomTiles.pop();
             }
         }
 
-        Stack<Goal> goals = new Stack<Goal>();
-
+        // Create a stack with all goals
+        // When a goal is given this goal is removed
+        Stack<Goal> goals = new Stack<>();
         for(Goal g : Goal.values())
             goals.push(g);
 
+        // Give a goal to a random Tile only one time
         for(int i = 0; i < 24; i++) {
             int rdm = new Random().nextInt(49);
             if(set[rdm].existGoal() || rdm == 0 || rdm == 6 || rdm == 42 || rdm == 48) {
@@ -108,6 +120,10 @@ public class Board {
         return set;
     }
 
+    /**
+     * Fill the board with a set of tiles, every 7 tiles we change lines
+     * @param setTiles the tiles that will use
+     */
     private void createBoard(Tile[] setTiles)
     {
         for (int i = 0; i < SIZE * SIZE; i++)
@@ -116,6 +132,12 @@ public class Board {
         }
     }
 
+    /**
+     * When we insert a Tile we have to move all tiles in the corresponding column and in the corresponding order
+     * @param numCol The column where we want to insert
+     * @param newTile The tile we want to insert on the board
+     * @return The next single tile, the tile that comes out of the board
+     */
     public Tile changeByNorth(int numCol, Tile newTile)
     {
         Tile tempRetour = _board[numCol][SIZE -1];
@@ -126,7 +148,12 @@ public class Board {
         _board[numCol][0] = newTile;
         return tempRetour;
     }
-
+    /**
+     * When we insert a Tile we have to move all tiles in the corresponding column and in the corresponding order
+     * @param numCol The column where we want to insert
+     * @param newTile The tile we want to insert on the board
+     * @return The next single tile, the tile that comes out of the board
+     */
     public Tile changeBySouth(int numCol, Tile newTile)
     {
         Tile tempRetour = _board[numCol][0];
@@ -137,7 +164,12 @@ public class Board {
         _board[numCol][SIZE -1] = newTile;
         return tempRetour;
     }
-
+    /**
+     * When we insert a Tile we have to move all tiles in the corresponding row and in the corresponding order
+     * @param numRow The row where we want to insert
+     * @param newTile The tile we want to insert on the board
+     * @return The next single tile, the tile that comes out of the board
+     */
     public Tile changeByEast(int numRow, Tile newTile)
     {
         Tile tempRetour = _board[0][numRow];
@@ -148,7 +180,12 @@ public class Board {
         _board[SIZE -1][numRow] = newTile;
         return tempRetour;
     }
-
+    /**
+     * When we insert a Tile we have to move all tiles in the corresponding row and in the corresponding order
+     * @param numRow The row where we want to insert
+     * @param newTile The tile we want to insert on the board
+     * @return The next single tile, the tile that comes out of the board
+     */
     public Tile changeByWest(int numRow, Tile newTile)
     {
         Tile tempRetour = _board[SIZE -1][numRow];
@@ -160,6 +197,11 @@ public class Board {
         return tempRetour;
     }
 
+    /**
+     *
+     * @param numRowCol the number of the row or of the column
+     * @return if this row or column is movable
+     */
     public boolean isMovable(int numRowCol)
     {
         return numRowCol % 2 == 1;

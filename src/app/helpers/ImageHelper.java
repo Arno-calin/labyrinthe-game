@@ -13,8 +13,8 @@ public class ImageHelper {
 	/**
 	 *  Generate a new image from a background image and a foreground image
 	 *
-	 * @param backgroundPath is the path of the background image
-	 * @param foregroundPaths is the list of path of the other images
+	 * @param bg is the path of the background image
+	 * @param fg is the list of path of the other images
 	 * @return an image combining the foreground image over the background image
 	 */
 	public static BufferedImage merge(BufferedImage bg, BufferedImage fg ) throws IOException {
@@ -27,7 +27,7 @@ public class ImageHelper {
 		BufferedImage mergedImage = new BufferedImage(bg.getWidth(), bg.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = mergedImage.createGraphics();
 
-		// Enable anti-aliasing for better quality
+		// Enable antialiasing for better quality
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		// Draw background
